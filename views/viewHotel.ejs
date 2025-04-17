@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= hotel.title %> - Details</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/script.js" defer></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <a href="/hotels">
+        <img src="/images/airnbn.png" alt="Airbnb Logo" class="logo-image">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="/hotels">Home</a>
+      <% if (user) { %>
+        <a href="/logout">Logout</a>
+      <% } else { %>
+        <a href="/login">Log in</a>
+      <% } %>
+    </div>
+  </nav>
+
+  <!-- Hotel Details -->
+  <div class="hotel-details-container">
+    <div class="hotel-info">
+      <h1><%= hotel.title %></h1>
+      <img src="<%= hotel.image %>" alt="<%= hotel.title %>" class="hotel-image">
+      <p><strong>Owned by:</strong> Pratham Wakde</p>
+      <p><strong>Description:</strong> <%= hotel.description %></p>
+      <p><strong>City:</strong> <%= hotel.location %></p>
+      <p><strong>Country:</strong> <%= hotel.country %></p>
+      <p><strong>Category:</strong> <%= hotel.category.join(", ") %></p>
+
+      <% if (user) { %>
+      <div class="hotel-actions">
+        <a href="/hotels/edit/<%= hotel._id %>" class="btn-edit">Edit</a>
+        <form action="/hotels/delete/<%= hotel._id %>" method="POST" class="inline-form">
+          <button type="submit" class="btn-delete">Delete</button>
+        </form>
+      </div>
+      <% } %>
+    </div>
+
+    <% if (user) { %>
+    <!-- Review Section -->
+    <div class="review-section">
+      <hr>
+      <h4>Leave A Review</h4>
+      <form action="/hotels/<%= hotel._id %>/reviews" method="post">
+        <div class="form-group">
+          <label for="rating">Rating</label>
+          <fieldset class="starability-slot">
+            <input type="radio" id="rate1" name="review[rating]" value="1">
+            <label for="rate1">&#9733;</label>
+            
+            <input type="radio" id="rate2" name="review[rating]" value="2">
+            <label for="rate2">&#9733;</label>
+            
+            <input type="radio" id="rate3" name="review[rating]" value="3">
+            <label for="rate3">&#9733;</label>
+            
+            <input type="radio" id="rate4" name="review[rating]" value="4">
+            <label for="rate4">&#9733;</label>
+            
+            <input type="radio" id="rate5" name="review[rating]" value="5">
+            <label for="rate5">&#9733;</label>
+          </fieldset>              
+        </div>
+
+        <div class="form-group">
+          <label for="comment">Comments</label>
+          <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control" required></textarea>
+        </div>
+
+        <button class="btn-submit">Submit</button>
+      </form>
+      <hr>
+    </div>
+    <!-- Display All Reviews -->
+    <div class="reviews-container">
+      <% if (successMessage.length > 0) { %>
+        <div class="alert alert-success"><%= successMessage %></div>
+      <% } %>
+      <h4>All Reviews</h4>
+      <% reviews.forEach(function(review) { %>
+      <div class="review-card">
+        <div class="review-content">
+          <h5>@<%= review.user.username %></h5>
+          <p class="starability-result" data-rating="<%= review.rating %>"></p>
+          <p><%= review.comment %></p>
+        </div>
+        <% if (user && user._id.toString() === review.user._id.toString()) { %>
+        <form action="/hotels/<%= hotel._id %>/reviews/<%= review._id %>?_method=DELETE" method="post">
+          <button class="btn-delete-review">Delete</button>
+        </form>
+        <% } %>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+</body>
+</html>
+      <div class="booking-sidebar">
+        <h2>Booking Options</h2>
+        <p><strong>Price per night:</strong> ₹<%= hotel.price %></p>
+    
+        <% if (user) { %>
+            <button id="bookBtn" onclick="bookHotel('<%= hotel._id %>')">Book Hotel</button>
+            <button id="cancelBookingBtn" onclick="cancelBooking('<%= hotel._id %>')" style="display:none;">Cancel Booking</button>
+    
+            <p id="bookingMessage"></p>
+    
+            <!-- Payment Section -->
+            <div id="paymentSection" style="display:none;">
+                <h3>Payment</h3>
+                <p><strong>Total Price:</strong> ₹<%= hotel.price %> per night</p>
+                <label for="paymentMethod">Choose Payment Method:</label>
+                <select id="paymentMethod">
+                    <option value="credit-card">Credit Card</option>
+                    <option value="debit-card">Debit Card</option>
+                    <option value="upi">UPI</option>
+                    <option value="net-banking">Net Banking</option>
+                </select>
+                <button id="payNowBtn" onclick="processPayment()">Pay Now</button>
+            </div>
+        <% } else { %> 
+            <p>Please <a href="/login">Log in</a> to book this hotel.</p>
+        <% } %>
+    </div>    
+  </div>
+</body>
+</html>
+<style>
+  .hotel-info{
+    align-items: center;
+    justify-content: center;
+    margin-left: 30%;
+    
+  }
+  .hotel-info img{
+    width: 30%; 
+    margin-left: 10%;
+
+  }
+  .btn-edit button{
+   text-decoration: none;
+   color: white;
+   font-weight: bold;
+   width: 10%;
+
+  }
+  .hotel-info h1{
+    margin-left: 16%;
+  }
+</style>
+<style>
+  .booking-sidebar {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    position: fixed;
+    right: 20px;
+    top: 100px;
+}
+
+.booking-sidebar h2 {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.booking-sidebar p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.booking-sidebar button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+#bookBtn {
+    background-color: #FF385C;
+    color: white;
+}
+
+#bookBtn:hover {
+    background-color: #e14b50;
+}
+
+#cancelBookingBtn {
+    background-color: #ddd;
+    color: #333;
+    margin-top: 10px;
+}
+
+#cancelBookingBtn:hover {
+    background-color: #bbb;
+}
+
+#bookingMessage {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#paymentSection {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+#paymentMethod {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+#payNowBtn {
+    background-color: #007bff;
+    color: white;
+    margin-top: 10px;
+}
+
+#payNowBtn:hover {
+    background-color: #0056b3;
+}
+a{
+font-weight: bold;
+text-decoration: none;
+color: #333;
+}
+</style>
+<script>
+  function bookHotel(hotelId) {
+    document.getElementById("bookingMessage").innerText = "Hotel Booking Successfully ✅";
+    document.getElementById("bookingMessage").style.color = "green";
+
+    document.getElementById("bookBtn").style.display = "none";
+    document.getElementById("cancelBookingBtn").style.display = "block";
+    document.getElementById("paymentSection").style.display = "block";
+}
+
+function cancelBooking(hotelId) {
+    document.getElementById("bookingMessage").innerText = "Hotel Booking Canceled ❌";
+    document.getElementById("bookingMessage").style.color = "red";
+
+    document.getElementById("bookBtn").style.display = "block";
+    document.getElementById("cancelBookingBtn").style.display = "none";
+    document.getElementById("paymentSection").style.display = "none";
+}
+
+function processPayment() {
+    let paymentMethod = document.getElementById("paymentMethod").value;
+    alert(`Payment successful via ${paymentMethod}! ✅`);
+}
+</script>
+<style>
+  /* Review Section Styling */
+.review-container {
+    width: 60%;
+    margin: auto;
+    padding: 20px;
+}
+
+.review-container h4 {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.review-container textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* Star Rating Styling */
+/* Star Rating Container */
+.starability-slot {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Hide the radio buttons */
+.starability-slot input {
+    display: none;
+}
+
+/* Style for Stars */
+.starability-slot label {
+    font-size: 30px;
+    color: gray; /* Default color */
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Highlight stars when selected */
+.starability-slot input:checked ~ label,
+.starability-slot label:hover,
+.starability-slot label:hover ~ label {
+    color: gold;
+    transform: scale(1.2);
+}
+
+/* Review Cards */
+.review-card {
+    width: 45%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.review-card h5 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.review-card p {
+    font-size: 14px;
+    color: #444;
+    margin: 5px 0;
+}
+
+/* Delete Button */
+.review-card button {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.review-card button:hover {
+    background-color: darkgray;
+}
+</style>

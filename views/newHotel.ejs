@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add New Hotel - Airbnb Clone</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-logo-column">
+      <a href="/hotels">
+        <img src="/images/airnbn.png" alt="Airbnb Logo" class="logo-image" />
+      </a>
+    </div>
+    <div class="links">
+      <a href="/hotels">Home</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+  <div class="form-container">
+    <h2>Create a New Hotel</h2>
+    <form action="/hotels/add" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" placeholder="Add a catchy title" required />
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" placeholder="Enter description" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="image">Upload Listing Image</label>
+        <input type="file" id="image" name="image" required />
+      </div>
+      <div class="form-group">
+        <label for="price">Price per Night</label>
+        <input type="number" id="price" name="price" placeholder="Price.." required />
+      </div>
+      <div class="form-group">
+        <label for="country">Country</label>
+        <input type="text" id="country" name="country" value="India" required />
+      </div>
+      <div class="form-group">
+        <label for="location">Location / City</label>
+        <input type="text" id="location" name="location" placeholder="Enter location" required />
+      </div>
+      <div class="form-group">
+        <label for="category">Choose Category (Select multiple with Ctrl/Cmd)</label>
+        <select id="category" name="category" multiple required>
+          <option value="Beachfront">Beachfront</option>
+          <option value="Cabins">Cabins</option>
+          <option value="OMG">OMG!</option>
+          <option value="Lake">Lake</option>
+          <option value="Design">Design</option>
+          <option value="Trending">Trending</option>
+          <option value="Rooms">Rooms</option>
+          <option value="Mountains">Mountains</option>
+          <option value="Castles">Castles</option>
+          <option value="Amazing Pools">Amazing Pools</option>
+          <option value="Farms">Farms</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">Add Hotel</button>
+    </form>
+  </div>
+</body>
+</html>
